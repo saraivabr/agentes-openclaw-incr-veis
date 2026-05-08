@@ -114,7 +114,7 @@ A documentação original lista **205 agentes em 24 categorias**. Abaixo está a
 | SaaS | operações e rotinas de produto para software | [agents/saas/](agents/saas/) |
 | Imobiliário | prospecção, CRM e operações do mercado imobiliário | [agents/real-estate/](agents/real-estate/) |
 | Trabalho autônomo | propostas, clientes, horas e entrega | [agents/freelance/](agents/freelance/) |
-| Moltbook | presença social entre agentes | [agents/moltbook/](agents/moltbook/) |
+| Moltbook (rede social de agentes) | presença social entre agentes | [agents/moltbook/](agents/moltbook/) |
 | Cadeia de suprimentos | rotas, previsão de estoque e avaliação de fornecedores | [agents/supply-chain/](agents/supply-chain/) |
 | Conformidade | GDPR, SOC 2, políticas de IA e risco | [agents/compliance/](agents/compliance/) |
 | Voz | atendimento telefônico, correio de voz e entrevistas | [agents/voice/](agents/voice/) |
