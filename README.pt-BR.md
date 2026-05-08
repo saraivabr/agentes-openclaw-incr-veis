@@ -1,4 +1,4 @@
-# 🦞 Awesome OpenClaw Agents — Guia em Português (Brasil)
+# 🦞 Awesome OpenClaw Agents — Guia em Português do Brasil
 
 [![Awesome](https://awesome.re/badge.svg)](https://awesome.re)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -8,9 +8,11 @@
 
 > Tradução e explicação da documentação principal do projeto para o público brasileiro.
 >
-> Este repositório reúne **205 templates de agentes de IA prontos para produção** no ecossistema OpenClaw. Cada template pode ser copiado, adaptado e usado como base para criar agentes com personalidade, regras, integrações e fluxo operacional definidos em `SOUL.md`.
+> Este repositório reúne **205 modelos de agentes de IA prontos para produção** no ecossistema OpenClaw. Cada modelo pode ser copiado, adaptado e usado como base para criar agentes com personalidade, regras, integrações e fluxo operacional definidos em `SOUL.md`.
 
-**Idioma:** [English](README.md) · **Português (Brasil)**
+**Idioma:** [Inglês](README.md) · **Português (Brasil)**
+
+> Observação: nomes de produtos, arquivos, pastas, marcas e caminhos técnicos foram mantidos quando fazem parte da estrutura real do projeto.
 
 ---
 
@@ -18,17 +20,17 @@
 
 Se você está chegando agora ao OpenClaw, pense neste repositório como uma biblioteca prática de agentes prontos.
 
-Em vez de começar do zero, você escolhe um template, copia o arquivo principal do agente e adapta ao seu cenário. Isso é útil para times, freelancers, operações internas, marketing, suporte, automações e dezenas de outros casos reais.
+Em vez de começar do zero, você escolhe um modelo, copia o arquivo principal do agente e adapta ao seu cenário. Isso é útil para equipes, profissionais autônomos, operações internas, marketing, suporte, automações e dezenas de outros casos reais.
 
 ### O que você encontra aqui
 
-- **Templates de agentes** organizados por categoria
+- **Modelos de agentes** organizados por categoria
 - **Casos de uso reais** para entender o que outras pessoas já estão construindo
-- **Skills reutilizáveis** para execução local
-- **Quickstart** para subir o primeiro agente rapidamente
-- **Configs de modelos** para migrar entre provedores
+- **Habilidades reutilizáveis** para execução local
+- **Início rápido** para subir o primeiro agente rapidamente
+- **Configurações de modelos** para migrar entre provedores
 - **Padrão de memória** para reduzir custo e contexto
-- **Guias de troubleshooting** para problemas comuns
+- **Guias de solução de problemas** para situações comuns
 
 ---
 
@@ -38,13 +40,13 @@ Em vez de começar do zero, você escolhe um template, copia o arquivo principal
 - [Catálogo de categorias](#catalogo-de-categorias)
 - [Como começar rápido](#como-comecar-rapido)
 - [Casos de uso reais](#casos-de-uso-reais)
-- [Skills e subagentes](#skills-e-subagentes)
+- [Habilidades e subagentes](#habilidades-e-subagentes)
 - [Por que OpenClaw?](#por-que-openclaw)
-- [Deploy com CrewClaw](#deploy-com-crewclaw)
+- [Implantação com CrewClaw](#implantacao-com-crewclaw)
 - [Servidores MCP e integrações](#servidores-mcp-e-integracoes)
 - [Segurança](#seguranca)
 - [Guias, custos e modelos](#guias-custos-e-modelos)
-- [Memory Wiki](#memory-wiki)
+- [Wiki de memória](#wiki-de-memoria)
 - [Como contribuir](#como-contribuir)
 
 ---
@@ -53,7 +55,7 @@ Em vez de começar do zero, você escolhe um template, copia o arquivo principal
 
 ## O que é um agente neste repositório?
 
-Aqui, um agente não é só um prompt solto.
+Aqui, um agente não é só uma instrução solta.
 
 Cada agente normalmente é organizado assim:
 
@@ -72,7 +74,7 @@ Para o público brasileiro, a lógica prática é simples:
 
 - `SOUL.md` define **quem é o agente e como ele trabalha**
 - `README.md` explica **quando usar e que tipo de problema ele resolve**
-- `AGENTS.md`, `HEARTBEAT.md` e `WORKING.md` ajudam a transformar um template em algo mais próximo de operação contínua
+- `AGENTS.md`, `HEARTBEAT.md` e `WORKING.md` ajudam a transformar um modelo em algo mais próximo de operação contínua
 
 Na prática, isso facilita criar agentes para:
 
@@ -80,7 +82,7 @@ Na prática, isso facilita criar agentes para:
 - automação de marketing
 - análise financeira
 - rotina de RH
-- coordenação de tarefas de times
+- coordenação de tarefas de equipes
 - monitoramento de infraestrutura
 - produção de conteúdo
 
@@ -92,41 +94,41 @@ Na prática, isso facilita criar agentes para:
 
 A documentação original lista **205 agentes em 24 categorias**. Abaixo está a tradução explicada das áreas principais, com links diretos para as pastas do repositório.
 
-| Categoria | O que cobre | Pasta |
+| Categoria em PT-BR | O que cobre | Pasta original |
 |---|---|---|
 | Produtividade | priorização, relatórios, organização pessoal, reuniões | [agents/productivity/](agents/productivity/) |
-| Desenvolvimento | revisão de código, testes, documentação, debugging, migrações | [agents/development/](agents/development/) |
-| Marketing e Conteúdo | SEO, social media, newsletter, branding, outreach | [agents/marketing/](agents/marketing/) |
-| Negócios | suporte, vendas, CRM, churn, faturamento | [agents/business/](agents/business/) |
+| Desenvolvimento | revisão de código, testes, documentação, depuração, migrações | [agents/development/](agents/development/) |
+| Marketing e conteúdo | SEO, mídias sociais, boletim informativo, marca e prospecção | [agents/marketing/](agents/marketing/) |
+| Negócios | suporte, vendas, CRM, cancelamento de clientes e faturamento | [agents/business/](agents/business/) |
 | Pessoal | rotina, saúde, leitura, viagens, planejamento | [agents/personal/](agents/personal/) |
-| DevOps | incidentes, deploy, observabilidade, capacidade, custos | [agents/devops/](agents/devops/) |
-| Finanças | despesas, receita, previsões, fraudes, pagamentos | [agents/finance/](agents/finance/) |
-| Educação | tutoria, quizzes, pesquisa, currículo, flashcards | [agents/education/](agents/education/) |
-| Saúde | triagem, notas clínicas, alimentação, treino, bem-estar | [agents/healthcare/](agents/healthcare/) |
-| Jurídico | contratos, políticas, conformidade, NDA, patentes | [agents/legal/](agents/legal/) |
-| RH | recrutamento, onboarding, benefícios, avaliações | [agents/hr/](agents/hr/) |
-| Criativo | branding, roteiro, copy, podcast, vídeo, UX | [agents/creative/](agents/creative/) |
-| Segurança | vulnerabilidades, acessos, incidentes, phishing | [agents/security/](agents/security/) |
-| E-commerce | catálogo, reviews, estoque, preços | [agents/ecommerce/](agents/ecommerce/) |
-| Dados | entrada de dados, transcrição, pesquisa, análise | [agents/data/](agents/data/) |
+| DevOps | incidentes, implantação, observabilidade, capacidade e custos | [agents/devops/](agents/devops/) |
+| Finanças | despesas, receita, previsões, fraudes e pagamentos | [agents/finance/](agents/finance/) |
+| Educação | tutoria, questionários, pesquisa, currículo e flashcards | [agents/education/](agents/education/) |
+| Saúde | triagem, notas clínicas, alimentação, treino e bem-estar | [agents/healthcare/](agents/healthcare/) |
+| Jurídico | contratos, políticas, conformidade, NDA e patentes | [agents/legal/](agents/legal/) |
+| RH | recrutamento, integração, benefícios e avaliações | [agents/hr/](agents/hr/) |
+| Criativo | marca, roteiro, redação publicitária, podcast, vídeo e UX | [agents/creative/](agents/creative/) |
+| Segurança | vulnerabilidades, acessos, incidentes e phishing | [agents/security/](agents/security/) |
+| Comércio eletrônico | catálogo, avaliações, estoque e preços | [agents/ecommerce/](agents/ecommerce/) |
+| Dados | entrada de dados, transcrição, pesquisa e análise | [agents/data/](agents/data/) |
 | SaaS | operações e rotinas de produto para software | [agents/saas/](agents/saas/) |
-| Imobiliário | prospecção, CRM e operações de real estate | [agents/real-estate/](agents/real-estate/) |
-| Freelance | propostas, clientes, horas, entrega | [agents/freelance/](agents/freelance/) |
+| Imobiliário | prospecção, CRM e operações do mercado imobiliário | [agents/real-estate/](agents/real-estate/) |
+| Trabalho autônomo | propostas, clientes, horas e entrega | [agents/freelance/](agents/freelance/) |
 | Moltbook | presença social entre agentes | [agents/moltbook/](agents/moltbook/) |
-| Supply Chain | rotas, previsão de estoque, avaliação de fornecedores | [agents/supply-chain/](agents/supply-chain/) |
-| Compliance | GDPR, SOC 2, políticas de IA, risco | [agents/compliance/](agents/compliance/) |
-| Voz | atendimento telefônico, voicemail, entrevistas | [agents/voice/](agents/voice/) |
-| Customer Success | onboarding, NPS, retenção | [agents/customer-success/](agents/customer-success/) |
-| Automação | rotinas recorrentes, briefing, candidaturas, negociação | [agents/automation/](agents/automation/) |
+| Cadeia de suprimentos | rotas, previsão de estoque e avaliação de fornecedores | [agents/supply-chain/](agents/supply-chain/) |
+| Conformidade | GDPR, SOC 2, políticas de IA e risco | [agents/compliance/](agents/compliance/) |
+| Voz | atendimento telefônico, correio de voz e entrevistas | [agents/voice/](agents/voice/) |
+| Sucesso do cliente | integração, NPS e retenção | [agents/customer-success/](agents/customer-success/) |
+| Automação | rotinas recorrentes, briefing, candidaturas e negociação | [agents/automation/](agents/automation/) |
 
 ### Leitura prática para quem está no Brasil
 
 Se você quer aplicar isso ao mercado brasileiro, alguns grupos tendem a ser os mais imediatos:
 
-- **Business + Marketing** para times comerciais, suporte e aquisição
-- **Development + DevOps** para squads de engenharia
-- **Finance + Compliance** para backoffice e governança
-- **Productivity + Automation** para operação individual e pequenas equipes
+- **Negócios + Marketing** para times comerciais, suporte e aquisição
+- **Desenvolvimento + DevOps** para squads de engenharia
+- **Finanças + Conformidade** para retaguarda operacional e governança
+- **Produtividade + Automação** para operação individual e pequenas equipes
 - **WhatsApp, atendimento e agenda** como frentes muito aderentes ao contexto local
 
 ---
@@ -135,7 +137,7 @@ Se você quer aplicar isso ao mercado brasileiro, alguns grupos tendem a ser os 
 
 ## Como começar rápido
 
-O projeto já traz um quickstart mínimo em Node.js para colocar um agente no ar em poucos minutos.
+O projeto já traz um fluxo mínimo em Node.js para colocar um agente no ar em poucos minutos.
 
 ### Pré-requisitos
 
@@ -159,7 +161,7 @@ node bot.js
 1. **Clona o repositório** e entra na pasta do exemplo mínimo.
 2. **Configura o `.env`** com as credenciais necessárias.
 3. **Escolhe um agente** copiando o `SOUL.md` de uma das categorias.
-4. **Inicia o bot** e conversa com ele via Telegram.
+4. **Inicia o robô** e conversa com ele via Telegram.
 
 Se quiser a documentação original desse fluxo, veja [quickstart/README.md](quickstart/README.md).
 
@@ -176,10 +178,10 @@ Arquivo principal: [USE-CASES.md](USE-CASES.md)
 - coordenação de múltiplos agentes de desenvolvimento
 - correção automática de erros e falhas de CI
 - operação de caixa de e-mail com triagem e resposta
-- automação de agenda, CRM e follow-up
+- automação de agenda, CRM e acompanhamento
 - controle de casa inteligente com Home Assistant
 - produção diária de conteúdo para redes sociais
-- análise de SEO e outreach automatizado
+- análise de SEO e prospecção automatizada
 - atendimento, prospecção e operações de negócios 24/7
 
 ### O que isso significa para o público brasileiro
@@ -191,21 +193,23 @@ Essa lista ajuda a sair do discurso genérico sobre IA e enxergar aplicações c
 - consultorias
 - operações internas
 - times de tecnologia
-- creators e infoprodutores
+- criadores e infoprodutores
 
 ---
 
-## Skills e subagentes
+<a id="habilidades-e-subagentes"></a>
 
-Além dos templates principais, o repositório inclui recursos reutilizáveis.
+## Habilidades e subagentes
 
-### Skills
+Além dos modelos principais, o repositório inclui recursos reutilizáveis.
 
-- [skills/gemma/](skills/gemma/) — skills para execução local com Gemma
-- [skills/claude/](skills/claude/) — skills voltadas ao Claude Code
-- [skills/README.md](skills/README.md) — visão geral das skills disponíveis
+### Habilidades
 
-Exemplos de skills:
+- [skills/gemma/](skills/gemma/) — habilidades para execução local com Gemma
+- [skills/claude/](skills/claude/) — habilidades voltadas ao Claude Code
+- [skills/README.md](skills/README.md) — visão geral das habilidades disponíveis
+
+Exemplos de habilidades:
 
 - explicação de código
 - geração de mensagem de commit
@@ -223,7 +227,7 @@ Na prática, isso permite delegar tarefas mais específicas sem perder o context
 
 ## Por que OpenClaw?
 
-A proposta central do OpenClaw é ser **config-first**.
+A proposta central do OpenClaw é ser **orientado à configuração**.
 
 Em vez de exigir uma base grande de código ou um framework complexo, a ideia é:
 
@@ -235,36 +239,38 @@ Em vez de exigir uma base grande de código ou um framework complexo, a ideia é
 ### Resumo traduzido da comparação da documentação original
 
 - contra frameworks de agentes, o OpenClaw tenta reduzir complexidade operacional
-- contra alternativas ultraleves, ele oferece mais recursos, canais, orquestração e templates
-- contra soluções empresariais hospedadas, ele preserva mais controle e self-hosting
+- contra alternativas ultraleves, ele oferece mais recursos, canais, orquestração e modelos
+- contra soluções empresariais hospedadas, ele preserva mais controle e hospedagem própria
 
 ### Em termos simples
 
 Para quem está no Brasil e quer validar casos rápidos, o OpenClaw é interessante porque combina:
 
 - entrada relativamente simples
-- possibilidade de self-hosting
+- possibilidade de hospedagem própria
 - integração com canais populares
 - uso com provedores diferentes
-- reaproveitamento de templates prontos
+- reaproveitamento de modelos prontos
 
 ---
 
-## Deploy com CrewClaw
+<a id="implantacao-com-crewclaw"></a>
 
-A documentação original destaca o [CrewClaw](https://crewclaw.com/agents) como caminho para gerar um pacote completo de deploy com:
+## Implantação com CrewClaw
+
+A documentação original destaca o [CrewClaw](https://crewclaw.com/agents) como caminho para gerar um pacote completo de implantação com:
 
 - `SOUL.md`
 - `Dockerfile`
 - `docker-compose.yml`
-- bot pronto
+- robô pronto
 - `.env.example`
 - `package.json`
 - `README.md`
 
 ### Leitura prática
 
-Isso é útil para quem quer sair do modo “template de repositório” e ir para um pacote mais próximo de produção, sem montar tudo manualmente.
+Isso é útil para quem quer sair do modo “modelo de repositório” e ir para um pacote mais próximo de produção, sem montar tudo manualmente.
 
 ---
 
@@ -272,14 +278,14 @@ Isso é útil para quem quer sair do modo “template de repositório” e ir pa
 
 ## Servidores MCP e integrações
 
-### MCP Servers
+### Servidores MCP
 
 A documentação principal lista servidores MCP oficiais e comunitários para ampliar as capacidades dos agentes.
 
 Exemplos:
 
-- fetch/web browsing
-- filesystem
+- busca e navegação na web
+- sistema de arquivos
 - GitHub
 - Slack
 - Notion
@@ -294,7 +300,7 @@ O repositório também destaca integrações e canais como:
 - Telegram
 - Slack
 - Discord
-- Email
+- e-mail
 - GitHub Actions
 - n8n
 - cron / pm2 / systemd
@@ -319,15 +325,15 @@ Arquivo recomendado: [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
 
 A documentação reforça que agentes OpenClaw rodam com acesso aos seus arquivos e serviços. Por isso, as práticas mínimas são:
 
-- bind do gateway em `localhost`
-- chaves em `.env`
-- revisão de skills antes de instalar
-- regras rígidas no `SOUL.md`
-- limites de escopo, logs e budget caps
+- restringir o gateway a `localhost`
+- manter chaves em `.env`
+- revisar habilidades antes de instalar
+- definir regras rígidas no `SOUL.md`
+- aplicar limites de escopo, logs e orçamento
 
 ### Tradução do ponto principal
 
-No contexto brasileiro, isso significa não tratar o agente como “bot mágico”. Ele deve ser operado com política de acesso, revisão e limites claros, especialmente em ambientes com dados de clientes, financeiro e operações.
+No contexto brasileiro, isso significa não tratar o agente como “robô mágico”. Ele deve ser operado com política de acesso, revisão e limites claros, especialmente em ambientes com dados de clientes, financeiro e operações.
 
 ---
 
@@ -335,13 +341,13 @@ No contexto brasileiro, isso significa não tratar o agente como “bot mágico�
 
 ### Guias e tutoriais
 
-A README original reúne links para guias de:
+A documentação original reúne links para guias de:
 
-- instalação e setup
+- instalação e configuração
 - criação do primeiro agente
 - uso com Ollama
 - integração com Slack e Telegram
-- multiagentes
+- múltiplos agentes
 - comparação com CrewAI, AutoGPT, LangChain e outros
 
 ### Custos e múltiplos provedores
@@ -354,9 +360,9 @@ O projeto também mantém uma seção sobre otimização de custo, com alternati
 - Ollama Cloud
 - Ollama local
 
-### Configs prontas
+### Configurações prontas
 
-As pastas abaixo trazem bundles de configuração para migração entre modelos:
+As pastas abaixo trazem pacotes de configuração para migração entre modelos:
 
 - [configs/glm-5.1/](configs/glm-5.1/)
 - [configs/minimax-m2.7/](configs/minimax-m2.7/)
@@ -375,7 +381,9 @@ Como custo costuma ser uma variável decisiva por aqui, essa parte da documenta�
 
 ---
 
-## Memory Wiki
+<a id="wiki-de-memoria"></a>
+
+## Wiki de memória
 
 Pasta principal: [memory-wiki/](memory-wiki/)
 
@@ -427,7 +435,7 @@ Se a ideia for popularizar o OpenClaw em português, uma boa contribuição é c
 - [USE-CASES.md](USE-CASES.md) — catálogo de casos reais
 - [TROUBLESHOOTING.md](TROUBLESHOOTING.md) — diagnóstico e recuperação
 - [agents/README.md](agents/README.md) — visão geral dos agentes
-- [skills/README.md](skills/README.md) — skills disponíveis
+- [skills/README.md](skills/README.md) — habilidades disponíveis
 
 ---
 
@@ -437,8 +445,8 @@ Em termos práticos, este repositório é útil para quem quer **entender, testa
 
 A melhor forma de usar este material no Brasil é:
 
-- começar por um template próximo da sua operação
-- rodar o quickstart
+- começar por um modelo próximo da sua operação
+- rodar o início rápido
 - traduzir e adaptar o `SOUL.md` para o seu contexto
 - conectar o agente aos canais que sua equipe realmente usa
 - evoluir com memória, integrações e regras mais rígidas
