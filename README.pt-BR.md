@@ -10,7 +10,7 @@
 >
 > Este repositório reúne **205 modelos de agentes de IA prontos para produção** no ecossistema OpenClaw. Cada modelo pode ser copiado, adaptado e usado como base para criar agentes com personalidade, regras, integrações e fluxo operacional definidos em `SOUL.md`.
 
-**Idioma:** [Inglês](README.md) · **Português (Brasil)**
+**Idioma:** [English](README.en.md) · **Português (Brasil)**
 
 > Observação: nomes de produtos, arquivos, pastas, marcas e caminhos técnicos foram mantidos quando fazem parte da estrutura real do projeto.
 
@@ -430,7 +430,7 @@ Se a ideia for popularizar o OpenClaw em português, uma boa contribuição é c
 
 ## Leitura recomendada dentro do repositório
 
-- [README.md](README.md) — versão original em inglês
+- [README.en.md](README.en.md) — versão original em inglês
 - [quickstart/README.md](quickstart/README.md) — primeiro agente em execução
 - [USE-CASES.md](USE-CASES.md) — catálogo de casos reais
 - [TROUBLESHOOTING.md](TROUBLESHOOTING.md) — diagnóstico e recuperação
@@ -451,4 +451,4 @@ A melhor forma de usar este material no Brasil é:
 - conectar o agente aos canais que sua equipe realmente usa
 - evoluir com memória, integrações e regras mais rígidas
 
-Se quiser consultar a documentação original completa, use [README.md](README.md).
+Se quiser consultar a documentação original completa, use [README.en.md](README.en.md).
