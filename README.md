@@ -7,6 +7,8 @@
 [![Agents](https://img.shields.io/badge/agents-205-blueviolet)](agents/)
 [![Works with Ollama Cloud](https://img.shields.io/badge/Ollama_Cloud-Ready-00C853?style=flat-square&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJ3aGl0ZSI+PGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iMTAiLz48L3N2Zz4=)](https://ollama.com)
 
+**Languages:** [English](README.md) · [Português (Brasil)](README.pt-BR.md)
+
 > A curated collection of **205 production-ready AI agent templates** for the OpenClaw ecosystem. Every template is a copy-paste ready `SOUL.md` file.
 
 <p align="center">
