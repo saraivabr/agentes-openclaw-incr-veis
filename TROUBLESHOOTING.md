@@ -1,229 +1,247 @@
-# Troubleshooting OpenClaw
+# Solução de Problemas do OpenClaw
 
-A consolidated runbook for the stability, cost, and integration issues that keep showing up in [r/openclaw](https://reddit.com/r/openclaw) and adjacent communities. This file is maintained as a community reference — every entry cites a source so you can verify symptoms against your own setup before applying a fix.
+Um guia consolidado para os problemas de estabilidade, custo e integração que mais aparecem no [r/openclaw](https://reddit.com/r/openclaw) e comunidades adjacentes. Este arquivo é mantido como referência da comunidade — cada entrada cita uma fonte para que você possa verificar os sintomas no seu ambiente antes de aplicar a solução.
 
-**Current stable baseline:** `2026.4.11`
-**Last reviewed:** 2026-04-13
-
----
-
-## Table of contents
-
-- [Quick diagnosis table](#quick-diagnosis-table)
-- [Known issues by version](#known-issues-by-version)
-- [Cost overruns](#cost-overruns)
-- [Bot is dead / unresponsive](#bot-is-dead--unresponsive)
-- [Heartbeat failure modes](#heartbeat-failure-modes)
-- [Model-specific gotchas](#model-specific-gotchas)
-- [Escalation: when to ask the community](#escalation-when-to-ask-the-community)
-- [Contributing](#contributing)
+**Versão estável atual:** `2026.4.11`
+**Última revisão:** 2026-04-13
 
 ---
 
-## Quick diagnosis table
+## Índice
 
-Start here. Match the symptom, confirm the cause in the linked section, then apply the fix.
+- [Tabela de diagnóstico rápido](#tabela-de-diagnostico-rapido)
+- [Problemas conhecidos por versão](#problemas-conhecidos-por-versao)
+- [Custos excessivos](#custos-excessivos)
+- [Bot parado / sem resposta](#bot-parado--sem-resposta)
+- [Modos de falha do heartbeat](#modos-de-falha-do-heartbeat)
+- [Problemas específicos por modelo](#problemas-especificos-por-modelo)
+- [Escalação: quando pedir ajuda à comunidade](#escalacao-quando-pedir-ajuda-a-comunidade)
+- [Contribuindo](#contribuindo)
 
-| Symptom | Most likely cause | Fix | Section |
+---
+
+<a id="tabela-de-diagnostico-rapido"></a>
+
+## Tabela de diagnóstico rápido
+
+Comece aqui. Encontre o sintoma, confirme a causa na seção indicada e aplique a solução.
+
+| Sintoma | Causa mais provável | Solução | Seção |
 |---|---|---|---|
-| Bot answers a few turns then goes silent | heartbeat-model failure or provider timeout | Restart gateway, verify heartbeat config | [Heartbeat](#heartbeat-failure-modes) |
-| Costs spiked overnight with no traffic change | Claude cache TTL regression (1h → 5m) OR `2026.4.8` daily-reset bug | Pin Opus 4.6 cache headers, upgrade to `2026.4.11` | [Cost overruns](#cost-overruns) |
-| Telegram channel silent, no errors in gateway log | `2026.4.7` Telegram regression | Upgrade to `2026.4.11` | [v2026.4.7](#v202647--telegram-channel-broken) |
-| API bill 3-5x normal, `daily_budget` ignored | `2026.4.8` daily session reset regression | Upgrade to `2026.4.11` or patch `gateway/budget.ts` | [v2026.4.8](#v202648--daily-reset-regression) |
-| `openclaw agent --status` returns `UNKNOWN` | Sessions file corruption | Delete `~/.openclaw/agents/<name>/sessions/sessions.json` | [Bot is dead](#bot-is-dead--unresponsive) |
-| Claude API key banned despite pay-as-you-go | Burst rate-limit tripped abuse detection | Contact Anthropic support, throttle retries | [Claude Opus/Sonnet](#claude-opussonnet) |
-| GPT 5.4 "feels lobotomized" in OpenClaw | Config issue, not the model | Set `thinking=high` + `fastmode=true` | [GPT 5.4](#gpt-54) |
-| Minimax M2.7 agent refuses commercial tasks | Commercial license caveat | Switch provider or obtain license | [Minimax M2.7](#minimax-m27) |
-| Memory files grow unbounded, latency creeps up | Context bloat | Compile memory, prune unused entries | [Context bloat](#context-bloat-from-memory-files) |
-| Opus token count climbs with no new tasks | Advisor executor runaway loop | Kill executor, check `last-plan.json` | [Advisor loop runaway](#advisor-loop-runaway) |
-| Bot process alive but all agents report `stale` | Gateway heartbeat thread died | Restart gateway (`openclaw gateway restart`) | [Heartbeat](#heartbeat-failure-modes) |
+| Bot responde algumas mensagens e fica em silêncio | Falha no heartbeat-model ou timeout do provedor | Reinicie o gateway, verifique a configuração do heartbeat | [Heartbeat](#modos-de-falha-do-heartbeat) |
+| Custos subiram à noite sem mudança de tráfego | Regressão no TTL de cache do Claude (1h → 5m) OU bug de reset diário da `2026.4.8` | Fixe os headers de cache do Opus 4.6, atualize para `2026.4.11` | [Custos excessivos](#custos-excessivos) |
+| Canal do Telegram em silêncio, sem erros no log | Regressão do Telegram na `2026.4.7` | Atualize para `2026.4.11` | [v2026.4.7](#v202647--telegram-fora-do-ar) |
+| Conta API 3-5x acima do normal, `daily_budget` ignorado | Regressão de reset diário de sessão na `2026.4.8` | Atualize para `2026.4.11` ou corrija `gateway/budget.ts` | [v2026.4.8](#v202648--regressao-no-reset-diario) |
+| `openclaw agent --status` retorna `UNKNOWN` | Corrupção do arquivo de sessões | Delete `~/.openclaw/agents/<nome>/sessions/sessions.json` | [Bot parado](#bot-parado--sem-resposta) |
+| Chave da API do Claude banida apesar de pré-pago | Limite de burst disparou detecção de abuso | Contate suporte Anthropic, limite as tentativas de retry | [Claude Opus/Sonnet](#claude-opussonnet) |
+| GPT 5.4 "parece lobotomizado" no OpenClaw | Problema de configuração, não do modelo | Defina `thinking=high` + `fastmode=true` | [GPT 5.4](#gpt-54) |
+| Agente Minimax M2.7 recusa tarefas comerciais | Ressalva de licença comercial | Troque de provedor ou obtenha a licença | [Minimax M2.7](#minimax-m27) |
+| Arquivos de memória crescem sem limite, latência aumenta | Inchaço de contexto | Compile a memória, remova entradas não utilizadas | [Inchaço de contexto](#inchaco-de-contexto-por-arquivos-de-memoria) |
+| Contagem de tokens do Opus sobe sem novas tarefas | Loop descontrolado do executor advisor | Encerre o executor, verifique `last-plan.json` | [Loop do advisor](#loop-descontrolado-do-advisor) |
+| Processo do bot ativo mas todos os agentes em `stale` | Thread de heartbeat do gateway morreu | Reinicie o gateway (`openclaw gateway restart`) | [Heartbeat](#modos-de-falha-do-heartbeat) |
 
 ---
 
-## Known issues by version
+<a id="problemas-conhecidos-por-versao"></a>
 
-OpenClaw releases weekly. The community sentiment, summarized by [one user](https://reddit.com/r/openclaw/comments/1sj9ich/), is that `2026.4.11` is "the first version in a while that did not break things." That matches our testing — if you are on anything between `2026.4.7` and `2026.4.10` and you can upgrade, upgrade.
+## Problemas conhecidos por versão
 
-### v2026.4.11 (stable baseline)
+O OpenClaw lança atualizações semanalmente. O sentimento da comunidade, resumido por [um usuário](https://reddit.com/r/openclaw/comments/1sj9ich/), é que `2026.4.11` é "a primeira versão em muito tempo que não quebrou nada". Isso corresponde aos nossos testes — se você está em qualquer versão entre `2026.4.7` e `2026.4.10` e pode atualizar, atualize.
 
-**Status:** Recommended. No known regressions as of 2026-04-13.
+### v2026.4.11 (versão estável recomendada)
 
-What's fixed relative to `4.10`:
-- Daily session reset honors `daily_budget` again (fixes `4.8` regression).
-- Telegram channel handler no longer drops updates silently (fixes `4.7` regression).
-- Heartbeat thread restarts on provider 5xx instead of wedging.
+**Status:** Recomendada. Nenhuma regressão conhecida até 2026-04-13.
 
-Source: [Is v.2026.4.11 the first version in a while that did not break things?](https://reddit.com/r/openclaw/comments/1sj9ich/)
+O que foi corrigido em relação à `4.10`:
+- Reset diário de sessão respeita `daily_budget` novamente (corrige regressão da `4.8`).
+- Handler do canal Telegram não descarta mais atualizações silenciosamente (corrige regressão da `4.7`).
+- Thread de heartbeat reinicia em erro 5xx do provedor em vez de travar.
 
-### v2026.4.10 — no known issues (but skip it)
+Fonte: [Is v.2026.4.11 the first version in a while that did not break things?](https://reddit.com/r/openclaw/comments/1sj9ich/)
 
-No confirmed regressions, but it also does not contain the `4.11` fixes. Skip directly to `4.11`.
+### v2026.4.10 — sem problemas conhecidos (mas pule)
 
-### v2026.4.9 — no known issues (but skip it)
+Nenhuma regressão confirmada, mas também não contém as correções da `4.11`. Pule direto para `4.11`.
 
-Same note. The community post history shows no specific complaints tied to `4.9`, but it still carries the `4.8` and `4.7` regressions.
+### v2026.4.9 — sem problemas conhecidos (mas pule)
 
-### v2026.4.8 — daily reset regression
+Mesma observação. O histórico de posts da comunidade não mostra reclamações específicas relacionadas à `4.9`, mas ela ainda carrega as regressões da `4.8` e `4.7`.
 
-**Symptom:** API bill inflates silently overnight. `daily_budget` setting appears to be ignored. Session counters reset more often than once per day, so rate caps never trigger.
+<a id="v202648--regressao-no-reset-diario"></a>
 
-**Impact:** Reported overnight cost multipliers of 3-5x. This one is dangerous because there is no error in the logs — the gateway keeps running, it just resets the budget counter too aggressively.
+### v2026.4.8 — regressão no reset diário
 
-**Detection:** Compare `~/.openclaw/metrics/daily.json` row count against wall-clock days. More than one row per day = you are affected.
+**Sintoma:** Conta de API infla silenciosamente durante a noite. A configuração `daily_budget` parece ser ignorada. Os contadores de sessão são resetados com mais frequência do que uma vez por dia, portanto os limites de taxa nunca disparam.
 
-**Fix:** Upgrade to `2026.4.11`. If you cannot upgrade, patch `gateway/budget.ts` to re-read the reset timestamp from disk on every tick instead of caching it in memory.
+**Impacto:** Multiplicadores de custo noturno de 3-5x relatados. Este é perigoso porque não há erros nos logs — o gateway continua rodando, mas reseta o contador de orçamento de forma muito agressiva.
 
-Source: [Regression in 2026.4.8 that silently breaks daily session reset and inflates your API bill](https://reddit.com/r/openclaw/comments/1shmg6l/)
+**Detecção:** Compare a contagem de linhas de `~/.openclaw/metrics/daily.json` com os dias do calendário. Mais de uma linha por dia = você está afetado.
 
-### v2026.4.7 — Telegram channel broken
+**Solução:** Atualize para `2026.4.11`. Se não puder atualizar, corrija `gateway/budget.ts` para reler o timestamp de reset do disco a cada tick em vez de armazená-lo em memória.
 
-**Symptom:** Telegram bot appears connected (`--status` returns `OK`), but messages from users never reach agents. Outbound messages from agents also fail, but without raising an error.
+Fonte: [Regression in 2026.4.8 that silently breaks daily session reset and inflates your API bill](https://reddit.com/r/openclaw/comments/1shmg6l/)
 
-**Impact:** For users who rely on Telegram as their primary mobile interface, this looks like the bot is "dead" even though the gateway is healthy.
+<a id="v202647--telegram-fora-do-ar"></a>
 
-**Detection:** Send a known test message to your bot and watch `~/.openclaw/gateway/logs/telegram.log`. On `4.7` you will see the webhook hit but no dispatch.
+### v2026.4.7 — Telegram fora do ar
 
-**Fix:** Upgrade to `2026.4.11`. Rollback to `2026.4.6` also works if you cannot upgrade forward.
+**Sintoma:** O bot do Telegram aparece como conectado (`--status` retorna `OK`), mas as mensagens dos usuários nunca chegam aos agentes. As mensagens de saída dos agentes também falham, sem gerar erros.
 
-Source: [OpenClaw 2026.4.7 Broke Telegram for Me](https://reddit.com/r/openclaw/comments/1sfh79p/)
+**Impacto:** Para usuários que dependem do Telegram como interface mobile principal, isso parece que o bot está "morto" mesmo com o gateway saudável.
 
-### v2026.4.6 — last known-good before the `4.7`/`4.8` window
+**Detecção:** Envie uma mensagem de teste conhecida para o seu bot e observe `~/.openclaw/gateway/logs/telegram.log`. Na `4.7` você verá o webhook sendo acionado, mas sem dispatch.
 
-If you need to roll back and cannot jump forward, `4.6` is the safest rollback target. No known critical issues, missing only the multimedia agents shipped in `4.5`.
+**Solução:** Atualize para `2026.4.11`. Fazer rollback para `2026.4.6` também funciona se não puder avançar.
 
-### v2026.4.5 — multimedia agents introduced
+Fonte: [OpenClaw 2026.4.7 Broke Telegram for Me](https://reddit.com/r/openclaw/comments/1sfh79p/)
 
-`video_generate` and `music_generate` agents shipped here. No known regressions. If you use deploy packages that reference multimedia agents, this is your floor.
+### v2026.4.6 — última versão estável antes da janela `4.7`/`4.8`
 
-### Older versions
+Se precisar fazer rollback e não puder avançar, `4.6` é o alvo de rollback mais seguro. Sem problemas críticos conhecidos; faltam apenas os agentes multimídia lançados na `4.5`.
 
-Not actively tracked in this document. If you are on anything below `2026.4.5` and seeing issues, upgrade first, then re-diagnose.
+### v2026.4.5 — agentes multimídia introduzidos
 
----
+Agentes `video_generate` e `music_generate` foram lançados aqui. Sem regressões conhecidas. Se você usa pacotes de implantação que referenciam agentes multimídia, esta é sua versão mínima.
 
-## Cost overruns
+### Versões anteriores
 
-Three causes account for almost every "why did my bill explode" post in the last month. Check them in this order.
-
-### Claude cache TTL regression (1h → 5m)
-
-**What happened:** Anthropic's prompt cache TTL silently regressed from 1 hour to 5 minutes on some account tiers. Long-running agents that relied on cache hits for cost stability started re-reading full context on every turn.
-
-**What it looks like:**
-- Input token count per turn roughly doubles with no change to your agent code.
-- Cache-read token count collapses to near zero.
-- Cost-per-session curve goes from flat to linear-in-turns.
-
-**Detection:** In your usage logs, compare `cache_read_input_tokens` vs `input_tokens` over the last 14 days. If the ratio fell off a cliff on a specific date, you are affected.
-
-**Mitigation:**
-1. Pin your Claude requests to explicit `cache_control: {"type": "ephemeral"}` blocks on the system prompt and tool definitions. Do not rely on implicit caching.
-2. Batch turns so that sequential tool calls stay inside a 5-minute window — if you cannot amortize over 1 hour, amortize over 5 minutes.
-3. For agents that idle for more than 5 minutes between turns, consider a different model tier where cache behavior is stable.
-
-Source: [Did they just find the issue with Claude? "Cache TTL silently regressed from 1h to 5m"](https://reddit.com/r/ClaudeAI/comments/1sjxrp1/)
-
-### Advisor loop runaway
-
-**What happens:** If you use the advisor pattern (Scout plans, executor runs), an executor bug can cause it to re-query Opus for the same plan repeatedly. Each loop burns Opus input tokens against an unchanged plan. Users have reported overnight Opus spend 10-20x normal.
-
-**Detection:** Watch Opus input token count per session. If a single `--from-plan` run exceeds `2 * plan_size`, you are looping.
-
-**Common causes:**
-- Executor hallucinates that a step failed when it actually succeeded, then re-plans.
-- `last-plan.json` was not overwritten between runs, so executor keeps loading the old plan.
-- Fire-and-forget invocation without tracking `run.cjs` exit codes.
-
-**Fix:**
-1. Always check `run.cjs` exit status. Do not fire-and-forget.
-2. Before every run, explicitly copy the intended plan: `cp last-plan-{config}-{track}.json last-plan.json`.
-3. Add a hard cap on Opus calls per session in your executor config (`max_opus_calls_per_run: 3` is a safe starting point).
-
-### Context bloat from memory files
-
-**What happens:** Memory files grow unbounded as agents append to them. Once memory exceeds roughly 50k tokens, every session pays to re-read the full file even if most of it is irrelevant to the current task.
-
-**Detection:** `wc -l ~/.openclaw/agents/<name>/memory/*.md` — if total is above ~8000 lines, you are paying for it on every turn.
-
-**Mitigation:**
-1. Compile memory instead of exploring it. Maintain a short index file that points to detail files; only load detail files when a task explicitly needs them.
-2. Archive memory entries older than 30 days into a cold store that agents don't load by default.
-3. See the `memory-wiki/` pattern in the main repo for the "compile, don't explore" approach.
+Não são ativamente rastreadas neste documento. Se você está em qualquer versão abaixo da `2026.4.5` e está tendo problemas, atualize primeiro e depois rediagnostique.
 
 ---
 
-## Bot is dead / unresponsive
+<a id="custos-excessivos"></a>
 
-### Diagnosis tree
+## Custos excessivos
 
-Work down the list. Stop at the first step that reveals the problem.
+Três causas explicam quase todos os posts "por que minha conta explodiu" no último mês. Verifique nesta ordem.
 
-1. **Is the gateway process alive?**
-   `ps aux | grep openclaw-gateway` — if no process, `openclaw gateway restart`.
+### Regressão no TTL do cache do Claude (1h → 5m)
 
-2. **Is heartbeat enabled and running?**
-   `openclaw agent --agent <name> --status` — look for `heartbeat: ok`. If `heartbeat: stale`, jump to [Heartbeat](#heartbeat-failure-modes).
+**O que aconteceu:** O TTL do cache de prompt da Anthropic regrediu silenciosamente de 1 hora para 5 minutos em algumas camadas de conta. Agentes de longa execução que dependiam de acertos de cache para estabilidade de custo começaram a reler o contexto completo a cada turno.
 
-3. **Is the model provider reachable?**
-   Hit your provider status page. Anthropic and OpenAI both have had multi-hour degradations in the last month. Check before assuming it's your setup.
+**Como parece:**
+- Contagem de tokens de entrada por turno aproximadamente dobra sem mudança no código do agente.
+- Contagem de tokens de leitura de cache colapsa para quase zero.
+- Curva de custo por sessão passa de plana para linear por turno.
 
-4. **Are sessions corrupted?**
-   `cat ~/.openclaw/agents/<name>/sessions/sessions.json | head` — if it's not valid JSON, delete it. OpenClaw will recreate on next run.
+**Detecção:** Nos seus logs de uso, compare `cache_read_input_tokens` vs `input_tokens` nos últimos 14 dias. Se a proporção caiu em uma data específica, você está afetado.
 
-5. **Is the API key still valid?**
-   Test the raw key with `curl` against the provider. Banned keys return `401` or `403` with no useful message from OpenClaw. See [Claude API account banned](#claude-opussonnet).
+**Mitigação:**
+1. Fixe suas requisições Claude com blocos explícitos `cache_control: {"type": "ephemeral"}` no system prompt e nas definições de ferramentas. Não dependa de cache implícito.
+2. Agrupe turnos para que chamadas sequenciais de ferramentas fiquem dentro de uma janela de 5 minutos — se não puder amortizar por 1 hora, amortize por 5 minutos.
+3. Para agentes que ficam ociosos por mais de 5 minutos entre turnos, considere uma camada de modelo diferente onde o comportamento de cache seja estável.
 
-6. **Is disk full?**
-   Metrics and session logs can fill up a small VM fast. `df -h` — if you're above 95%, clear `~/.openclaw/metrics/archive/`.
+Fonte: [Did they just find the issue with Claude? "Cache TTL silently regressed from 1h to 5m"](https://reddit.com/r/ClaudeAI/comments/1sjxrp1/)
 
-7. **Is the port bound?**
-   Gateway default is 18789. `lsof -i :18789` — if nothing is listening, restart gateway.
+<a id="loop-descontrolado-do-advisor"></a>
 
-### The "bot died on April 4" recovery
+### Loop descontrolado do advisor
 
-A representative case from the community: gateway process alive, all agents showing `stale`, no errors in logs, last successful message timestamped April 4. The user recovered it by running the full gateway from inside Claude Code as a subprocess, which restored state after restart.
+**O que acontece:** Se você usa o padrão advisor (Scout planeja, executor executa), um bug no executor pode fazê-lo consultar o Opus repetidamente para o mesmo plano. Cada loop queima tokens de entrada do Opus contra um plano inalterado. Usuários relataram gastos noturnos com Opus de 10-20x o normal.
 
-**Recovery steps that worked:**
-1. Stop the gateway.
-2. Back up `~/.openclaw/agents/*/sessions/` to a timestamped directory.
-3. Delete the session files (not the agent configs).
-4. Restart the gateway.
-5. Send one test message per agent to rebuild session state.
+**Detecção:** Observe a contagem de tokens de entrada do Opus por sessão. Se uma única execução `--from-plan` ultrapassar `2 * tamanho_do_plano`, você está em loop.
 
-This is also the right sequence for any "everything looks fine but nothing responds" symptom where the diagnosis tree above didn't catch it.
+**Causas comuns:**
+- O executor alucina que um passo falhou quando na verdade teve sucesso, e então replaneja.
+- `last-plan.json` não foi sobrescrito entre execuções, então o executor continua carregando o plano antigo.
+- Invocação fire-and-forget sem rastrear códigos de saída do `run.cjs`.
 
-Source: [My OpenClaw bot died on April 4. I got it back inside Claude Code.](https://reddit.com/r/openclaw/comments/1sjz8n1/)
+**Solução:**
+1. Sempre verifique o status de saída do `run.cjs`. Não use fire-and-forget.
+2. Antes de cada execução, copie explicitamente o plano pretendido: `cp last-plan-{config}-{track}.json last-plan.json`.
+3. Adicione um limite máximo de chamadas ao Opus por sessão na configuração do executor (`max_opus_calls_per_run: 3` é um bom ponto de partida).
+
+<a id="inchaco-de-contexto-por-arquivos-de-memoria"></a>
+
+### Inchaço de contexto por arquivos de memória
+
+**O que acontece:** Arquivos de memória crescem sem limite à medida que os agentes os complementam. Quando a memória ultrapassa cerca de 50 mil tokens, cada sessão paga para reler o arquivo completo mesmo que a maior parte seja irrelevante para a tarefa atual.
+
+**Detecção:** `wc -l ~/.openclaw/agents/<nome>/memory/*.md` — se o total for acima de ~8000 linhas, você está pagando por isso em cada turno.
+
+**Mitigação:**
+1. Compile a memória em vez de explorá-la. Mantenha um arquivo de índice curto que aponta para arquivos de detalhes; carregue os arquivos de detalhes apenas quando uma tarefa explicitamente precisar deles.
+2. Archive entradas de memória com mais de 30 dias em um armazenamento frio que os agentes não carregam por padrão.
+3. Veja o padrão `memory-wiki/` no repositório principal para a abordagem "compilar, não explorar".
 
 ---
 
-## Heartbeat failure modes
+<a id="bot-parado--sem-resposta"></a>
 
-### What heartbeat actually is
+## Bot parado / sem resposta
 
-In OpenClaw, "heartbeat" is a background thread inside the gateway that periodically pings each agent's model provider with a minimal request. It serves two purposes: keep session state warm, and detect provider degradation before user-facing requests time out. The model used for these pings is the "heartbeat-model."
+### Árvore de diagnóstico
 
-A lot of recent r/openclaw posts are about finding the right heartbeat-model. The tension is: you want something cheap (it pings every 30-120 seconds), fast (it shouldn't add latency), and stable (you don't want the heartbeat itself to be the thing that breaks).
+Percorra a lista de cima para baixo. Pare na primeira etapa que revelar o problema.
 
-Source: [The search for a new "heartbeat-model"](https://reddit.com/r/openclaw/comments/1sgk8nj/) and [For All Noobies - Heartbeat.MD](https://reddit.com/r/openclaw/comments/1sj9bzr/)
+1. **O processo do gateway está ativo?**
+   `ps aux | grep openclaw-gateway` — se não houver processo, `openclaw gateway restart`.
 
-### Common failure modes
+2. **O heartbeat está habilitado e rodando?**
+   `openclaw agent --agent <nome> --status` — procure por `heartbeat: ok`. Se `heartbeat: stale`, vá para [Heartbeat](#modos-de-falha-do-heartbeat).
 
-| Mode | Symptom | Root cause | Fix |
+3. **O provedor do modelo está acessível?**
+   Verifique a página de status do seu provedor. Anthropic e OpenAI tiveram degradações de várias horas no último mês. Verifique antes de assumir que é o seu ambiente.
+
+4. **As sessões estão corrompidas?**
+   `cat ~/.openclaw/agents/<nome>/sessions/sessions.json | head` — se não for JSON válido, delete o arquivo. O OpenClaw o recriará na próxima execução.
+
+5. **A chave de API ainda é válida?**
+   Teste a chave diretamente com `curl` contra o provedor. Chaves banidas retornam `401` ou `403` sem mensagem útil do OpenClaw. Veja [Conta da API do Claude banida](#claude-opussonnet).
+
+6. **O disco está cheio?**
+   Métricas e logs de sessão podem preencher rapidamente uma VM pequena. `df -h` — se estiver acima de 95%, limpe `~/.openclaw/metrics/archive/`.
+
+7. **A porta está ligada?**
+   Padrão do gateway: 18789. `lsof -i :18789` — se nada estiver ouvindo, reinicie o gateway.
+
+### Recuperação do "bot morreu em 4 de abril"
+
+Um caso representativo da comunidade: processo do gateway ativo, todos os agentes em `stale`, sem erros nos logs, última mensagem bem-sucedida com data de 4 de abril. O usuário se recuperou rodando o gateway completo dentro do Claude Code como subprocesso, o que restaurou o estado após reinicialização.
+
+**Passos de recuperação que funcionaram:**
+1. Pare o gateway.
+2. Faça backup de `~/.openclaw/agents/*/sessions/` em um diretório com timestamp.
+3. Delete os arquivos de sessão (não as configurações dos agentes).
+4. Reinicie o gateway.
+5. Envie uma mensagem de teste para cada agente para reconstruir o estado de sessão.
+
+Esta também é a sequência correta para qualquer sintoma "tudo parece bem mas nada responde" onde a árvore de diagnóstico acima não encontrou o problema.
+
+Fonte: [My OpenClaw bot died on April 4. I got it back inside Claude Code.](https://reddit.com/r/openclaw/comments/1sjz8n1/)
+
+---
+
+<a id="modos-de-falha-do-heartbeat"></a>
+
+## Modos de falha do heartbeat
+
+### O que é o heartbeat
+
+No OpenClaw, "heartbeat" é uma thread em segundo plano dentro do gateway que periodicamente envia um ping para o provedor de modelo de cada agente com uma requisição mínima. Ele serve a dois propósitos: manter o estado da sessão aquecido e detectar degradação do provedor antes que as requisições do usuário expirem. O modelo usado para esses pings é o "heartbeat-model".
+
+Muitos posts recentes no r/openclaw são sobre encontrar o heartbeat-model certo. A tensão é: você quer algo barato (faz pings a cada 30-120 segundos), rápido (não deve adicionar latência) e estável (você não quer que o próprio heartbeat quebre).
+
+Fonte: [The search for a new "heartbeat-model"](https://reddit.com/r/openclaw/comments/1sgk8nj/) e [For All Noobies - Heartbeat.MD](https://reddit.com/r/openclaw/comments/1sj9bzr/)
+
+### Modos de falha comuns
+
+| Modo | Sintoma | Causa raiz | Solução |
 |---|---|---|---|
-| Heartbeat wedge | `--status` returns `stale`, gateway process still running | Heartbeat thread deadlocked on a 5xx response | Restart gateway. Upgrade to `2026.4.11` which adds thread restart on 5xx. |
-| Heartbeat cost creep | Heartbeat model bill grows linearly | Heartbeat-model too expensive for your ping interval | Switch to a smaller model (Haiku tier) or increase ping interval to 300s. |
-| False negatives | Heartbeat reports `ok` but real requests fail | Heartbeat-model is on a different provider than agent-model | Align heartbeat-model provider with your primary agent-model provider. |
-| Heartbeat spam | Provider rate-limits your account | Ping interval too tight, no jitter | Add jitter to the interval, never go below 30s. |
+| Travamento do heartbeat | `--status` retorna `stale`, processo do gateway ainda rodando | Thread do heartbeat travada em resposta 5xx | Reinicie o gateway. Atualize para `2026.4.11` que adiciona reinício da thread em 5xx. |
+| Custo crescente do heartbeat | Conta do heartbeat-model cresce linearmente | Heartbeat-model muito caro para o intervalo de ping | Troque para um modelo menor (camada Haiku) ou aumente o intervalo de ping para 300s. |
+| Falsos negativos | Heartbeat reporta `ok` mas requisições reais falham | Heartbeat-model está em um provedor diferente do agent-model | Alinhe o provedor do heartbeat-model com o provedor principal do agente. |
+| Spam do heartbeat | Provedor limita a taxa da sua conta | Intervalo de ping muito curto, sem jitter | Adicione jitter ao intervalo, nunca fique abaixo de 30s. |
 
-### Recommended heartbeat-model choices (2026-04-13)
+### Escolhas recomendadas de heartbeat-model (2026-04-13)
 
-- **Claude Haiku 4** — cheapest, most stable, same provider as most OpenClaw agents. Default recommendation.
-- **GPT-4.1 nano** — good if your primary agents are on OpenAI.
-- **Gemini Flash 2.5** — cheap, but different provider from most setups; only use if that's where your agents live too.
+- **Claude Haiku 4** — mais barato, mais estável, mesmo provedor da maioria dos agentes OpenClaw. Recomendação padrão.
+- **GPT-4.1 nano** — bom se seus agentes principais estiverem na OpenAI.
+- **Gemini Flash 2.5** — barato, mas provedor diferente da maioria das configurações; use apenas se seus agentes estiverem neste provedor.
 
-Do not use Opus, Sonnet, or GPT-5.x as a heartbeat-model. You will regret it on the bill.
+Não use Opus, Sonnet ou GPT-5.x como heartbeat-model. Você vai se arrepender na conta.
 
-### Heartbeat config sanity checks
+### Verificações de sanidade na configuração do heartbeat
 
 ```yaml
 heartbeat:
@@ -232,115 +250,121 @@ heartbeat:
   interval_seconds: 60
   jitter_seconds: 15
   max_consecutive_failures: 3
-  on_failure: restart_thread   # was "wedge" in < 2026.4.11
+  on_failure: restart_thread   # era "wedge" em versões < 2026.4.11
 ```
 
-`on_failure: restart_thread` is only available on `2026.4.11` and later. On older versions, you must restart the gateway manually when heartbeat wedges.
+`on_failure: restart_thread` só está disponível na `2026.4.11` e posteriores. Em versões anteriores, você deve reiniciar o gateway manualmente quando o heartbeat travar.
 
 ---
 
-## Model-specific gotchas
+<a id="problemas-especificos-por-modelo"></a>
+
+## Problemas específicos por modelo
 
 ### GPT 5.4
 
-The short version, from a well-upvoted post: **a lot of "GPT 5.4 sucks in OpenClaw" reports are config issues, not the model.**
+A versão curta, de um post muito votado: **muitos relatos de "GPT 5.4 é ruim no OpenClaw" são problemas de configuração, não do modelo.**
 
-Most common fix:
-- Set `thinking=high` on the agent config. `thinking=low` gives you a much weaker model than the benchmarks you saw.
-- Set `fastmode=true`. Counterintuitively, this reduces latency without dropping quality for most agent workloads.
-- Do not stack `thinking=high` with `temperature > 0.4` — outputs get unstable.
+Correção mais comum:
+- Defina `thinking=high` na configuração do agente. `thinking=low` entrega um modelo muito mais fraco do que os benchmarks que você viu.
+- Defina `fastmode=true`. Paradoxalmente, isso reduz a latência sem perder qualidade para a maioria das cargas de trabalho de agentes.
+- Não combine `thinking=high` com `temperature > 0.4` — as saídas ficam instáveis.
 
-If you have applied all three and the model still feels weak, then you have an actual model issue. Before that, assume config.
+Se você aplicou os três e o modelo ainda parece fraco, então você tem um problema real com o modelo. Antes disso, assuma que é configuração.
 
-Source: [A lot of the new "GPT 5.4 sucks in OpenClaw" posts are really config issues](https://reddit.com/r/openclaw/comments/1sgpg8b/)
+Fonte: [A lot of the new "GPT 5.4 sucks in OpenClaw" posts are really config issues](https://reddit.com/r/openclaw/comments/1sgpg8b/)
 
 ### Claude Opus / Sonnet
 
-Three live issues to know about:
+Três problemas ativos para conhecer:
 
-1. **Account ban risk with rapid API calls.** One user reported their pay-as-you-go account getting banned after a burst of retries. Anthropic's abuse detection does not distinguish between "user hitting retry" and "script in a loop." If OpenClaw returns an error, do not retry more than 3 times with exponential backoff.
-   Source: [Claude API account banned despite pay as you go setup](https://reddit.com/r/openclaw/comments/1sf7iac/)
+1. **Risco de banimento de conta com chamadas rápidas à API.** Um usuário relatou ter sua conta pré-paga banida após uma rajada de tentativas de retry. A detecção de abuso da Anthropic não distingue entre "usuário clicando em retry" e "script em loop". Se o OpenClaw retornar um erro, não tente mais de 3 vezes com backoff exponencial.
+   Fonte: [Claude API account banned despite pay as you go setup](https://reddit.com/r/openclaw/comments/1sf7iac/)
 
-2. **Cache TTL bug.** See [cost overruns](#claude-cache-ttl-regression-1h--5m). This is the biggest live cost issue.
+2. **Bug de TTL do cache.** Veja [custos excessivos](#regressao-no-ttl-do-cache-do-claude-1h--5m). Este é o maior problema de custo ativo.
 
-3. **Session size limits.** "Hello uses 4%" threads are real — with large system prompts and tool definitions, a single message can eat 4-6% of the context window before you say anything. Keep system prompts tight and use prompt caching aggressively.
+3. **Limites de tamanho de sessão.** Os posts sobre "Hello usa 4%" são reais — com system prompts grandes e definições de ferramentas, uma única mensagem pode consumir 4-6% da janela de contexto antes de você dizer qualquer coisa. Mantenha os system prompts enxutos e use prompt caching de forma agressiva.
 
 ### GLM-5.1
 
-Generally stable. Known constraint: the OpenClaw provider adapter does not support tool streaming on GLM-5.1 yet, so tool-heavy agents will feel laggy. If your agent uses tools, prefer Claude or GPT.
+Geralmente estável. Limitação conhecida: o adaptador de provedor do OpenClaw ainda não suporta streaming de ferramentas no GLM-5.1, então agentes com muitas ferramentas vão parecer lentos. Se seu agente usa ferramentas intensivamente, prefira Claude ou GPT.
 
 ### Minimax M2.7
 
-**Commercial license caveat:** the M2.7 checkpoint most people pull from the model hub is non-commercial only. If you use it in a product, you need a commercial license from Minimax. This is not an OpenClaw bug — but agents using M2.7 will sometimes refuse to complete commercial-looking prompts due to the system-level license notice baked into the weights.
+**Ressalva de licença comercial:** o checkpoint M2.7 que a maioria das pessoas baixa do hub de modelos é de uso não comercial apenas. Se você usa em um produto, precisa de uma licença comercial da Minimax. Isso não é um bug do OpenClaw — mas agentes usando M2.7 às vezes se recusarão a completar prompts com aparência comercial devido ao aviso de licença incorporado nos pesos.
 
-Fix: either obtain the commercial license, or swap to a different model for commercial deployments.
+Solução: obtenha a licença comercial ou troque para um modelo diferente em implantações comerciais.
 
 ---
 
-## Escalation: when to ask the community
+<a id="escalacao-quando-pedir-ajuda-a-comunidade"></a>
 
-### Before you post
+## Escalação: quando pedir ajuda à comunidade
 
-Check, in order:
-1. This file, for a version or symptom match.
-2. The OpenClaw changelog for your running version.
-3. Recent [r/openclaw](https://reddit.com/r/openclaw) posts (last 7 days) — your issue may already be answered.
-4. GitHub issues on the main OpenClaw repo, filtered for your version tag.
+### Antes de publicar
 
-### Post format template for r/openclaw
+Verifique, nesta ordem:
+1. Este arquivo, procurando por versão ou sintoma correspondente.
+2. O changelog do OpenClaw para sua versão em execução.
+3. Posts recentes no [r/openclaw](https://reddit.com/r/openclaw) (últimos 7 dias) — seu problema pode já ter resposta.
+4. Issues do GitHub no repositório principal do OpenClaw, filtradas pela sua tag de versão.
 
-Copy this when you post. Incomplete bug reports get ignored; complete ones usually get a fix in under 24 hours.
+### Template de post para o r/openclaw
+
+Copie este modelo ao publicar. Relatórios de bug incompletos são ignorados; os completos geralmente recebem solução em menos de 24 horas.
 
 ```
-**OpenClaw version:** 2026.4.X
-**OS:** macOS 14.x / Ubuntu 22.04 / ...
-**Primary model:** claude-opus-4.6 / gpt-5.4 / ...
-**Heartbeat model:** claude-haiku-4 / none
-**Symptom (one sentence):**
-**When did it start:** YYYY-MM-DD
-**What changed just before:** upgraded from X to Y / new agent / new key / nothing
+**Versão do OpenClaw:** 2026.4.X
+**SO:** macOS 14.x / Ubuntu 22.04 / ...
+**Modelo principal:** claude-opus-4.6 / gpt-5.4 / ...
+**Heartbeat model:** claude-haiku-4 / nenhum
+**Sintoma (uma frase):**
+**Quando começou:** AAAA-MM-DD
+**O que mudou antes:** atualização de X para Y / novo agente / nova chave / nada
 
-**Repro steps:**
+**Passos para reproduzir:**
 1.
 2.
 3.
 
-**Expected:**
-**Actual:**
+**Esperado:**
+**Obtido:**
 
-**Logs (redacted):**
+**Logs (censurados):**
 ```
 tail -100 ~/.openclaw/gateway/logs/gateway.log
 ```
 
-**What I already tried:**
-- [ ] Restarted gateway
-- [ ] Cleared sessions
-- [ ] Checked provider status
-- [ ] Read TROUBLESHOOTING.md
+**O que já tentei:**
+- [ ] Reiniciei o gateway
+- [ ] Limpei as sessões
+- [ ] Verifiquei status do provedor
+- [ ] Li o TROUBLESHOOTING.md
 ```
 
-The checklist at the end saves everyone time. If you've already cleared sessions, people won't tell you to clear sessions.
+O checklist ao final economiza o tempo de todos. Se você já limpou as sessões, as pessoas não vão pedir para você limpar as sessões.
 
-### What not to post
+### O que não publicar
 
-- "OpenClaw is broken" with no version number.
-- Screenshots of error popups with no surrounding log context.
-- "Is anyone else seeing this?" without a symptom description.
+- "OpenClaw está quebrado" sem número de versão.
+- Capturas de tela de popups de erro sem o contexto de log ao redor.
+- "Alguém mais está vendo isso?" sem descrever o sintoma.
 
-These get dismissed because there is nothing to act on.
+Esses são descartados porque não há nada acionável.
 
 ---
 
-## Contributing
+<a id="contribuindo"></a>
 
-PRs to this file are welcome. Each new issue entry must have:
+## Contribuindo
 
-- **Symptom** — what the user sees, in one sentence.
-- **Repro** — minimum steps to reproduce, or "intermittent" if you cannot reliably reproduce.
-- **Fix** — concrete action, not speculation.
-- **Source** — a Reddit permalink, GitHub issue link, or an OpenClaw version tag. Entries without a source will not be merged. "Trust me" is not a source.
+PRs para este arquivo são bem-vindos. Cada nova entrada de problema deve conter:
 
-Keep the tone calm and neutral. This file is a runbook, not a marketing piece and not a rant. If an entry reads like either, it will get rewritten before merge.
+- **Sintoma** — o que o usuário vê, em uma frase.
+- **Reprodução** — passos mínimos para reproduzir, ou "intermitente" se não conseguir reproduzir com confiança.
+- **Solução** — ação concreta, não especulação.
+- **Fonte** — permalink do Reddit, link de issue do GitHub ou tag de versão do OpenClaw. Entradas sem fonte não serão aprovadas. "Confie em mim" não é uma fonte.
 
-When a version ages out of the supported window (roughly 8 weeks), move its entry from [Known issues by version](#known-issues-by-version) to a historical section at the bottom, but do not delete it — users on old pins still need to find it via search.
+Mantenha o tom calmo e neutro. Este arquivo é um guia operacional, não peça de marketing nem desabafo. Se uma entrada parecer qualquer um dos dois, será reescrita antes do merge.
+
+Quando uma versão sair da janela de suporte (aproximadamente 8 semanas), mova sua entrada de [Problemas conhecidos por versão](#problemas-conhecidos-por-versao) para uma seção histórica no final, mas não a delete — usuários em versões antigas ainda precisam encontrá-la via busca.

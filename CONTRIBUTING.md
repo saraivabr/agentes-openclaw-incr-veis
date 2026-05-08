@@ -1,254 +1,254 @@
-# Contributing to Awesome OpenClaw Agents
+# Contribuindo para Agentes OpenClaw Incríveis
 
-We welcome community agents! Submit yours and get it listed on [crewclaw.com/agents](https://crewclaw.com/agents?utm_source=github&utm_medium=contributing&utm_campaign=submit).
-
----
-
-## Agent File System
-
-Each agent is more than a prompt. It's a full operating system.
-
-```
-agents/[category]/[agent-name]/
-├── SOUL.md          ← Identity & personality (required)
-├── README.md        ← Description & use cases (required)
-├── AGENTS.md        ← Operating rules & instructions (optional)
-├── HEARTBEAT.md     ← Wake-up checklist (optional)
-└── WORKING.md       ← Starting task template (optional)
-```
-
-**SOUL.md** and **README.md** are required. The rest are optional but make your agent production-ready.
+Agentes da comunidade são bem-vindos! Envie o seu e ganhe destaque em [crewclaw.com/agents](https://crewclaw.com/agents?utm_source=github&utm_medium=contributing&utm_campaign=submit).
 
 ---
 
-## Submit Your Agent
+## Sistema de Arquivos do Agente
 
-### Option 1: Pull Request (recommended)
+Um agente é mais do que um prompt. É um sistema operacional completo.
 
-**Step 1:** Fork & clone
+```
+agents/[categoria]/[nome-do-agente]/
+├── SOUL.md          ← Identidade e personalidade (obrigatório)
+├── README.md        ← Descrição e casos de uso (obrigatório)
+├── AGENTS.md        ← Regras operacionais e instruções (opcional)
+├── HEARTBEAT.md     ← Checklist de ativação (opcional)
+└── WORKING.md       ← Template de tarefa inicial (opcional)
+```
+
+**SOUL.md** e **README.md** são obrigatórios. Os demais são opcionais, mas deixam seu agente pronto para produção.
+
+---
+
+## Envie seu Agente
+
+### Opção 1: Pull Request (recomendado)
+
+**Passo 1:** Fork e clone
 
 ```bash
-git clone https://github.com/YOUR-USERNAME/awesome-openclaw-agents.git
+git clone https://github.com/SEU-USUARIO/awesome-openclaw-agents.git
 cd awesome-openclaw-agents
 ```
 
-**Step 2:** Create your agent folder
+**Passo 2:** Crie a pasta do seu agente
 
 ```bash
-mkdir -p agents/[category]/[agent-name]
+mkdir -p agents/[categoria]/[nome-do-agente]
 ```
 
-Categories: `business`, `creative`, `data`, `development`, `devops`, `ecommerce`, `education`, `finance`, `freelance`, `healthcare`, `hr`, `legal`, `marketing`, `personal`, `productivity`, `real-estate`, `saas`, `security`
+Categorias: `business`, `creative`, `data`, `development`, `devops`, `ecommerce`, `education`, `finance`, `freelance`, `healthcare`, `hr`, `legal`, `marketing`, `personal`, `productivity`, `real-estate`, `saas`, `security`
 
-**Step 3:** Write your SOUL.md (required)
+**Passo 3:** Escreva seu SOUL.md (obrigatório)
 
-Who is this agent? What's their personality?
+Quem é esse agente? Qual é a personalidade dele?
 
 ```markdown
-# Agent Name
+# Nome do Agente
 
-Brief description of the agent.
+Breve descrição do agente.
 
-## Core Identity
+## Identidade Principal
 
-- **Role:** What the agent does
-- **Personality:** How it behaves
-- **Communication:** How it talks
+- **Papel:** O que o agente faz
+- **Personalidade:** Como ele se comporta
+- **Comunicação:** Como ele fala
 
-## Responsibilities
+## Responsabilidades
 
-1. **Primary Task**
-   - Detail 1
-   - Detail 2
+1. **Tarefa Principal**
+   - Detalhe 1
+   - Detalhe 2
 
-## Behavioral Guidelines
+## Diretrizes de Comportamento
 
-### Do:
-- Good behavior 1
+### Deve:
+- Comportamento positivo 1
 
-### Don't:
-- Bad behavior 1
+### Não deve:
+- Comportamento negativo 1
 
-## Example Interactions
+## Exemplos de Interação
 
-**User:** Example prompt
-**Agent:** Example response
+**Usuário:** Exemplo de prompt
+**Agente:** Exemplo de resposta
 ```
 
-**Step 4:** Write your README.md (required)
+**Passo 4:** Escreva seu README.md (obrigatório)
 
 ```markdown
-# Agent Name
+# Nome do Agente
 
-> One-line description
+> Descrição em uma linha
 
-## Overview
+## Visão Geral
 
-What this agent does and why it's useful.
+O que este agente faz e por que é útil.
 
-## Use Cases
+## Casos de Uso
 
-| Request | Output |
-|---------|--------|
-| Example 1 | Result 1 |
+| Solicitação | Resultado   |
+|-------------|-------------|
+| Exemplo 1   | Resultado 1 |
 
-## Files
+## Arquivos
 
-| File | Purpose |
-|------|---------|
-| SOUL.md | Agent identity and personality |
-| AGENTS.md | Operating rules |
-| HEARTBEAT.md | Wake-up checklist |
-| WORKING.md | Starting task |
+| Arquivo      | Finalidade                  |
+|--------------|-----------------------------|
+| SOUL.md      | Identidade e personalidade  |
+| AGENTS.md    | Regras operacionais         |
+| HEARTBEAT.md | Checklist de ativação       |
+| WORKING.md   | Tarefa inicial              |
 
-## Author
+## Autor
 
-Created by [@your-username](https://github.com/your-username)
+Criado por [@seu-usuario](https://github.com/seu-usuario)
 ```
 
-**Step 5:** Add AGENTS.md (optional)
+**Passo 5:** Adicione AGENTS.md (opcional)
 
-How should the agent operate? What are the rules?
+Como o agente deve operar? Quais são as regras?
 
 ```markdown
-# AGENTS.md — Operating Rules
+# AGENTS.md — Regras Operacionais
 
-## Workspace
-- Read/write files in your workspace directory
-- Store findings in memory/ folder
-- Log daily activity in memory/YYYY-MM-DD.md
+## Espaço de Trabalho
+- Ler/escrever arquivos no diretório de trabalho
+- Armazenar descobertas na pasta memory/
+- Registrar atividade diária em memory/AAAA-MM-DD.md
 
-## Communication
-- Post updates to task threads
-- Use @mentions to notify other agents
-- Keep messages concise and actionable
+## Comunicação
+- Publicar atualizações nas threads de tarefas
+- Usar @menções para notificar outros agentes
+- Manter mensagens concisas e acionáveis
 
-## Tools
-- File system: read, write, search
-- Shell: run scripts, check logs
-- Web: browse, research, fetch data
+## Ferramentas
+- Sistema de arquivos: ler, escrever, pesquisar
+- Shell: executar scripts, verificar logs
+- Web: navegar, pesquisar, buscar dados
 
-## Rules
-- Always check WORKING.md on startup
-- Update WORKING.md after completing a task
-- Never make decisions outside your domain
-- Ask for clarification instead of guessing
+## Regras
+- Sempre verificar WORKING.md na inicialização
+- Atualizar WORKING.md após concluir uma tarefa
+- Nunca tomar decisões fora do seu domínio
+- Pedir esclarecimentos em vez de adivinhar
 ```
 
-**Step 6:** Add HEARTBEAT.md (optional)
+**Passo 6:** Adicione HEARTBEAT.md (opcional)
 
-What should the agent check every time it wakes up?
+O que o agente deve verificar cada vez que for ativado?
 
 ```markdown
-# HEARTBEAT.md — Wake-Up Checklist
+# HEARTBEAT.md — Checklist de Ativação
 
-## On Wake
-- [ ] Read WORKING.md for current task
-- [ ] Check for @mentions and notifications
-- [ ] Review assigned tasks
+## Ao Ativar
+- [ ] Ler WORKING.md para a tarefa atual
+- [ ] Verificar @menções e notificações
+- [ ] Revisar tarefas atribuídas
 
-## Periodic
-- [ ] Scan activity feed for relevant updates
-- [ ] Check if blocked tasks can be unblocked
-- [ ] Update daily notes in memory/
+## Periódico
+- [ ] Verificar feed de atividade para atualizações relevantes
+- [ ] Checar se tarefas bloqueadas podem ser desbloqueadas
+- [ ] Atualizar notas diárias em memory/
 
-## Stand Down
-- If no tasks and no mentions, reply HEARTBEAT_OK
+## Encerramento
+- Se não houver tarefas nem menções, responder HEARTBEAT_OK
 ```
 
-**Step 7:** Add WORKING.md (optional)
+**Passo 7:** Adicione WORKING.md (opcional)
 
-What's the agent's starting state?
+Qual é o estado inicial do agente?
 
 ```markdown
-# WORKING.md — Current State
+# WORKING.md — Estado Atual
 
-## Current Task
-No active task. Waiting for assignment.
+## Tarefa Atual
+Nenhuma tarefa ativa. Aguardando atribuição.
 
-## Context
-- Agent deployed and ready
-- All integrations connected
+## Contexto
+- Agente implantado e pronto
+- Todas as integrações conectadas
 
-## Next Steps
-1. Check task board for new assignments
-2. Review any pending @mentions
-3. Begin work on highest priority item
+## Próximos Passos
+1. Verificar quadro de tarefas para novas atribuições
+2. Revisar @menções pendentes
+3. Iniciar trabalho no item de maior prioridade
 ```
 
-**Step 8:** Add entry to `agents.json`
+**Passo 8:** Adicione entrada no `agents.json`
 
 ```json
 {
-  "id": "your-agent-name",
-  "category": "category",
-  "name": "Your Agent Name",
-  "role": "One-line role description",
-  "path": "agents/category/your-agent-name/SOUL.md",
+  "id": "nome-do-seu-agente",
+  "category": "categoria",
+  "name": "Nome do Seu Agente",
+  "role": "Descrição do papel em uma linha",
+  "path": "agents/categoria/nome-do-seu-agente/SOUL.md",
   "deploy": "https://crewclaw.com/create-agent"
 }
 ```
 
-**Step 9:** Submit PR
+**Passo 9:** Envie o PR
 
 ```bash
 git add .
-git commit -m "Add [AgentName] agent template"
+git commit -m "Adiciona template de agente [NomeDoAgente]"
 git push origin main
 ```
 
-### Option 2: Issue
+### Opção 2: Issue
 
-Don't want to set up a PR? Use the **[Submit Your Agent](https://github.com/mergisi/awesome-openclaw-agents/issues/new?template=agent-submission.md)** issue template. Paste your SOUL.md and we'll add it for you.
-
----
-
-## What Happens After Merge
-
-1. Your agent appears in the [registry](https://github.com/mergisi/awesome-openclaw-agents/tree/main/agents)
-2. Listed on [crewclaw.com/agents](https://crewclaw.com/agents?utm_source=github&utm_medium=contributing&utm_campaign=listed) with deploy button
-3. You get credited as the author
-4. Community can deploy your agent with one click
+Não quer configurar um PR? Use o template de issue **[Enviar Seu Agente](https://github.com/mergisi/awesome-openclaw-agents/issues/new?template=agent-submission.md)**. Cole seu SOUL.md e nós adicionamos para você.
 
 ---
 
-## Submission Tiers
+## O Que Acontece Após o Merge
 
-| Tier | Files | Badge |
-|------|-------|-------|
-| Basic | SOUL.md + README.md | Community Agent |
-| Standard | + AGENTS.md | Production Agent |
-| Full | + HEARTBEAT.md + WORKING.md | Full Agent OS |
-
-Full submissions get highlighted in the registry.
+1. Seu agente aparece no [registro](https://github.com/mergisi/awesome-openclaw-agents/tree/main/agents)
+2. Listado em [crewclaw.com/agents](https://crewclaw.com/agents?utm_source=github&utm_medium=contributing&utm_campaign=listed) com botão de implantação
+3. Você é creditado como autor
+4. A comunidade pode implantar seu agente com um clique
 
 ---
 
-## Style Guidelines
+## Níveis de Envio
 
-- **Agent names:** Descriptive. `CodeReviewer` not `CR`
-- **SOUL.md:** Clear headers, example interactions, specific behavioral guidelines
-- **AGENTS.md:** Concrete rules, not vague suggestions
-- **HEARTBEAT.md:** Actionable checklist, not prose
-- **README:** Start with name + one-liner, include use case table, credit author
+| Nível    | Arquivos                    | Badge                    |
+|----------|-----------------------------|--------------------------|
+| Básico   | SOUL.md + README.md         | Agente Comunitário       |
+| Padrão   | + AGENTS.md                 | Agente de Produção       |
+| Completo | + HEARTBEAT.md + WORKING.md | SO de Agente Completo    |
 
----
-
-## PR Checklist
-
-- [ ] SOUL.md follows the template above
-- [ ] README.md included
-- [ ] Entry added to `agents.json`
-- [ ] Agent tested (works with OpenClaw or similar framework)
-- [ ] No broken links
-- [ ] (Optional) AGENTS.md, HEARTBEAT.md, WORKING.md included
+Envios completos ganham destaque no registro.
 
 ---
 
-## Review Process
+## Diretrizes de Estilo
 
-1. Maintainer reviews within 48 hours
-2. Feedback if changes needed
-3. Merged and deployed to crewclaw.com/agents
+- **Nomes de agentes:** Descritivos. `RevisorDeCodigo` e não `RC`
+- **SOUL.md:** Cabeçalhos claros, exemplos de interação, diretrizes comportamentais específicas
+- **AGENTS.md:** Regras concretas, não sugestões vagas
+- **HEARTBEAT.md:** Checklist acionável, não prosa
+- **README:** Comece com nome + uma linha descritiva, inclua tabela de casos de uso, credite o autor
 
-Questions? [Open a discussion](https://github.com/mergisi/awesome-openclaw-agents/discussions).
+---
+
+## Checklist do PR
+
+- [ ] SOUL.md segue o template acima
+- [ ] README.md incluído
+- [ ] Entrada adicionada ao `agents.json`
+- [ ] Agente testado (funciona com OpenClaw ou framework similar)
+- [ ] Sem links quebrados
+- [ ] (Opcional) AGENTS.md, HEARTBEAT.md, WORKING.md incluídos
+
+---
+
+## Processo de Revisão
+
+1. Mantenedor revisa em até 48 horas
+2. Feedback se necessário
+3. Merge e implantação em crewclaw.com/agents
+
+Dúvidas? [Abra uma discussão](https://github.com/mergisi/awesome-openclaw-agents/discussions).
