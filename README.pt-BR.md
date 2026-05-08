@@ -34,22 +34,24 @@ Em vez de começar do zero, você escolhe um template, copia o arquivo principal
 
 ## Índice
 
-- [O que e um agente neste repositorio?](#o-que-e-um-agente-neste-repositorio)
-- [Catalogo de categorias](#catalogo-de-categorias)
-- [Como comecar rapido](#como-comecar-rapido)
+- [O que é um agente neste repositório?](#o-que-e-um-agente-neste-repositorio)
+- [Catálogo de categorias](#catalogo-de-categorias)
+- [Como começar rápido](#como-comecar-rapido)
 - [Casos de uso reais](#casos-de-uso-reais)
 - [Skills e subagentes](#skills-e-subagentes)
 - [Por que OpenClaw?](#por-que-openclaw)
 - [Deploy com CrewClaw](#deploy-com-crewclaw)
-- [Servidores MCP e integracoes](#servidores-mcp-e-integracoes)
-- [Seguranca](#seguranca)
+- [Servidores MCP e integrações](#servidores-mcp-e-integracoes)
+- [Segurança](#seguranca)
 - [Guias, custos e modelos](#guias-custos-e-modelos)
 - [Memory Wiki](#memory-wiki)
 - [Como contribuir](#como-contribuir)
 
 ---
 
-## O que e um agente neste repositorio?
+<a id="o-que-e-um-agente-neste-repositorio"></a>
+
+## O que é um agente neste repositório?
 
 Aqui, um agente não é só um prompt solto.
 
@@ -84,7 +86,9 @@ Na prática, isso facilita criar agentes para:
 
 ---
 
-## Catalogo de categorias
+<a id="catalogo-de-categorias"></a>
+
+## Catálogo de categorias
 
 A documentação original lista **205 agentes em 24 categorias**. Abaixo está a tradução explicada das áreas principais, com links diretos para as pastas do repositório.
 
@@ -127,7 +131,9 @@ Se você quer aplicar isso ao mercado brasileiro, alguns grupos tendem a ser os 
 
 ---
 
-## Como comecar rapido
+<a id="como-comecar-rapido"></a>
+
+## Como começar rápido
 
 O projeto já traz um quickstart mínimo em Node.js para colocar um agente no ar em poucos minutos.
 
@@ -262,7 +268,9 @@ Isso é útil para quem quer sair do modo “template de repositório” e ir pa
 
 ---
 
-## Servidores MCP e integracoes
+<a id="servidores-mcp-e-integracoes"></a>
+
+## Servidores MCP e integrações
 
 ### MCP Servers
 
@@ -303,7 +311,9 @@ Essas integrações tornam os agentes mais úteis em operações reais, especial
 
 ---
 
-## Seguranca
+<a id="seguranca"></a>
+
+## Segurança
 
 Arquivo recomendado: [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
 
